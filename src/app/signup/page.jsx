@@ -14,11 +14,14 @@ const SignUp = () => {
 
   const onFinish = (values) => {
     // console.log("Success:", values);
-    signup(values);
+
+        signup(values);
   };
 
   return (
-    <div className="h-screen w-full flex justify-center items-center">
+    <div className="h-screen w-full flex flex-col justify-center items-center">
+        <h2 className="mb-10 text-center text-3xl">SignUp</h2>
+        
       <Form
         name="basic"
         labelCol={{
@@ -60,7 +63,7 @@ const SignUp = () => {
             },
           ]}
         >
-          <Input />
+          <Input type="emails" />
         </Form.Item>
 
         <Form.Item

@@ -11,6 +11,11 @@ export default function Home() {
     (state) => state.user
   );
 
+  const handlePopUp = (data) => {
+    const datas = handleGoogleSignInWithPopUp(data);
+    console.log(datas);
+  }
+
   return (
     <main className="p-4 h-screen flex flex-col justify-center items-center">
       <Button onClick={logout}>Logout</Button>
@@ -30,7 +35,7 @@ export default function Home() {
         </div>
         <Button
           className="w-full border"
-          onClick={() => handleGoogleSignInWithPopUp("Hellow world!")}
+          onClick={() => handlePopUp("Hellow world!")}
         >
           Continue With Google
         </Button>

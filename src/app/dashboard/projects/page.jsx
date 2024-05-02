@@ -1,13 +1,15 @@
 "use client";
 
 import { fetchPosts } from "@/app/api/data";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import Sidebar from "../sidebar/page";
 import { useStore } from "@/store/NewStore";
 import { Button, Space } from "antd";
 import { RxDotsVertical } from "react-icons/rx";
 import Dropdown from "@/components/Dropdown";
+import EditProjectModal from "@/components/EditProjectModal";
+import Link from "next/link";
 
 const Projects = () => {
   const [isDropdown, setIsDropdown] = useState(false);
@@ -49,7 +51,7 @@ const Projects = () => {
       project: "Pajama",
       createdDate: "2024-04-05",
       estimatedDate: "2024-07-01",
-      status: "panding",
+      status: "pending",
       tasks: [
         {
           id: 3,
@@ -100,13 +102,35 @@ const Projects = () => {
     },
   ];
 
-  const [projects, setProjects] = useState([...projectData]); // Your initial projects array
+  const [selectedProject, setSelectedProject] = useState(null);
+  // const [projects, setProjects] = useState([...projectData]);
+  const [projects, setProjects] = useState(() => {
+    const storedProjects = localStorage.getItem("projects");
+    return storedProjects ? JSON.parse(storedProjects) : [...projectData];
+  });
+
+  useEffect(() => {
+    localStorage.setItem("projects", JSON.stringify(projects));
+  }, [projects]);
 
   const handleDeleteProject = (projectId) => {
     const updatedProjects = projects.filter(
       (project) => project.id !== projectId
     );
     setProjects(updatedProjects);
+  };
+
+  const handleEditProject = (projectId) => {
+    const projectToEdit = projects.find((project) => project.id === projectId);
+    setSelectedProject(projectToEdit);
+  };
+
+  const handleUpdateProject = (updatedProject) => {
+    const updatedProjects = projects.map((project) =>
+      project.id === updatedProject.id ? updatedProject : project
+    );
+    setProjects(updatedProjects);
+    setSelectedProject(null);
   };
 
   return (
@@ -120,21 +144,28 @@ const Projects = () => {
               className={`w-[300px] border h-[150px] rounded-xl p-5 shadow-xl ${
                 data.status === "completed" && "border-t-green-600 border-t-4"
               } ${
-                data.status === "panding" && "border-t-fuchsia-600 border-t-4"
+                data.status === "pending" && "border-t-fuchsia-600 border-t-4"
               } ${data.status === "running" && "border-t-blue-500 border-t-4"}`}
             >
               <div className="flex justify-between">
                 <p>{data.project}</p>
                 <Dropdown>
                   {/* <ul className={`w-[100px] absolute border right-0 rounded-md p-2 ${isDropdown ? "w-[100px]" : "w-0 h-0 p-0 overflow-hidden"}`}> */}
-                  <li className="hover:bg-gray-300 py-1 text-sm text-center">
-                    View
+                  <li>
+                    <Link
+                      className="hover:bg-gray-300 py-1 text-sm text-center w-full block"
+                      href={`http://localhost:3000/dashboard/projects/${data.project}`}
+                    >
+                      View
+                    </Link>
                   </li>
-                  <li className="hover:bg-gray-300 py-1 text-sm text-center">
-                    Edit
+                  <li >
+                    <button onClick={() => handleEditProject(data.id)} className="hover:bg-gray-300 py-1 text-sm text-center w-full">
+                      Edit
+                    </button>
                   </li>
-                  <li className="hover:bg-gray-300 py-1 text-sm text-center">
-                    <button onClick={() => handleDeleteProject(data.id)}>
+                  <li>
+                    <button onClick={() => handleDeleteProject(data.id)} className="hover:bg-gray-300 py-1 text-sm text-center w-full">
                       Delete
                     </button>
                   </li>
@@ -152,6 +183,12 @@ const Projects = () => {
           ))}
         </ul>
       </div>
+      {selectedProject && (
+        <EditProjectModal
+          project={selectedProject}
+          onUpdateProject={handleUpdateProject}
+        />
+      )}
     </div>
   );
 };

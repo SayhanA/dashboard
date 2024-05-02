@@ -10,6 +10,8 @@ import { RxDotsVertical } from "react-icons/rx";
 import Dropdown from "@/components/Dropdown";
 import EditProjectModal from "@/components/EditProjectModal";
 import Link from "next/link";
+import AddProjectModal from "@/components/AddProjectModal";
+import { BsPlusCircleDotted } from "react-icons/bs";
 
 const Projects = () => {
   const [isDropdown, setIsDropdown] = useState(false);
@@ -18,6 +20,89 @@ const Projects = () => {
   const { data, isLoading, error } = useQuery("posts", fetchPosts);
   // console.log("data:", data);
 
+  // const projectData = [
+  //   {
+  //     id: 1,
+  //     project: "Dashboard",
+  //     createdDate: "2024-04-01",
+  //     estimatedDate: "2024-06-01",
+  //     status: "running",
+  //     tasks: [
+  //       {
+  //         id: 1,
+  //         title: "Task 1",
+  //         description: "Description of Task 1",
+  //         assignedTo: {
+  //           name: "John Doe",
+  //           image: "john-doe.jpg",
+  //         },
+  //       },
+  //       {
+  //         id: 2,
+  //         title: "Task 2",
+  //         description: "Description of Task 2",
+  //         assignedTo: {
+  //           name: "Jane Doe",
+  //           image: "jane-doe.jpg",
+  //         },
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     id: 2,
+  //     project: "Pajama",
+  //     createdDate: "2024-04-05",
+  //     estimatedDate: "2024-07-01",
+  //     status: "pending",
+  //     tasks: [
+  //       {
+  //         id: 3,
+  //         title: "Task 3",
+  //         description: "Description of Task 3",
+  //         assignedTo: {
+  //           name: "Alice Smith",
+  //           image: "alice-smith.jpg",
+  //         },
+  //       },
+  //       {
+  //         id: 4,
+  //         title: "Task 4",
+  //         description: "Description of Task 4",
+  //         assignedTo: {
+  //           name: "Bob Johnson",
+  //           image: "bob-johnson.jpg",
+  //         },
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     id: 3,
+  //     project: "Mango",
+  //     createdDate: "2024-04-10",
+  //     estimatedDate: "2024-08-01",
+  //     status: "completed",
+  //     tasks: [
+  //       {
+  //         id: 5,
+  //         title: "Task 5",
+  //         description: "Description of Task 5",
+  //         assignedTo: {
+  //           name: "Eva Green",
+  //           image: "eva-green.jpg",
+  //         },
+  //       },
+  //       {
+  //         id: 6,
+  //         title: "Task 6",
+  //         description: "Description of Task 6",
+  //         assignedTo: {
+  //           name: "Sam Wilson",
+  //           image: "sam-wilson.jpg",
+  //         },
+  //       },
+  //     ],
+  //   },
+  // ];
   const projectData = [
     {
       id: 1,
@@ -34,6 +119,7 @@ const Projects = () => {
             name: "John Doe",
             image: "john-doe.jpg",
           },
+          status: "pending", // Example status for Task 1
         },
         {
           id: 2,
@@ -43,6 +129,7 @@ const Projects = () => {
             name: "Jane Doe",
             image: "jane-doe.jpg",
           },
+          status: "active", // Example status for Task 2
         },
       ],
     },
@@ -61,6 +148,7 @@ const Projects = () => {
             name: "Alice Smith",
             image: "alice-smith.jpg",
           },
+          status: "inprogress", // Example status for Task 3
         },
         {
           id: 4,
@@ -70,6 +158,7 @@ const Projects = () => {
             name: "Bob Johnson",
             image: "bob-johnson.jpg",
           },
+          status: "done", // Example status for Task 4
         },
       ],
     },
@@ -88,6 +177,7 @@ const Projects = () => {
             name: "Eva Green",
             image: "eva-green.jpg",
           },
+          status: "pending", // Example status for Task 5
         },
         {
           id: 6,
@@ -97,10 +187,12 @@ const Projects = () => {
             name: "Sam Wilson",
             image: "sam-wilson.jpg",
           },
+          status: "active", // Example status for Task 6
         },
       ],
     },
   ];
+  
 
   const [selectedProject, setSelectedProject] = useState(null);
   // const [projects, setProjects] = useState([...projectData]);
@@ -133,6 +225,13 @@ const Projects = () => {
     setSelectedProject(null);
   };
 
+  const [isDropdow, setIsDropdow] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+
+  const handleAddProject = (newProject) => {
+    setProjects([...projects, newProject]);
+  };
+
   return (
     <div className="relative flex">
       <Sidebar className="border" />
@@ -159,13 +258,19 @@ const Projects = () => {
                       View
                     </Link>
                   </li>
-                  <li >
-                    <button onClick={() => handleEditProject(data.id)} className="hover:bg-gray-300 py-1 text-sm text-center w-full">
+                  <li>
+                    <button
+                      onClick={() => handleEditProject(data.id)}
+                      className="hover:bg-gray-300 py-1 text-sm text-center w-full"
+                    >
                       Edit
                     </button>
                   </li>
                   <li>
-                    <button onClick={() => handleDeleteProject(data.id)} className="hover:bg-gray-300 py-1 text-sm text-center w-full">
+                    <button
+                      onClick={() => handleDeleteProject(data.id)}
+                      className="hover:bg-gray-300 py-1 text-sm text-center w-full"
+                    >
                       Delete
                     </button>
                   </li>
@@ -182,6 +287,15 @@ const Projects = () => {
             </li>
           ))}
         </ul>
+      <button onClick={() => setShowModal(true)} className="w-[300px] border h-[150px] rounded-xl p-5 shadow-xl mt-5 flex justify-center items-center"><BsPlusCircleDotted className="text-[50px] text-blue-300 font-light" /></button>
+      </div>
+      <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+        {showModal && (
+          <AddProjectModal
+            onAddProject={handleAddProject}
+            onClose={() => setShowModal(false)}
+          />
+        )}
       </div>
       {selectedProject && (
         <EditProjectModal
